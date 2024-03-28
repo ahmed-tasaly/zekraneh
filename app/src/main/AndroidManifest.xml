@@ -2,19 +2,22 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="ir.rezarasoulzadeh.zekraneh">
 
+    <uses-permission android:name="android.permission.VIBRATE" />
+
     <application
+        android:name=".App"
         android:allowBackup="true"
-        android:icon="@drawable/zekr"
+        android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
-        android:roundIcon="@drawable/zekr"
+        android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
 
         <!-- Tasbihat widget -->
         <receiver
-            android:name=".view.activity.TasbihatActivity"
-            android:label="@string/tasbihatLabel"
-            android:exported="false">
+            android:name=".view.widget.TasbihatWidget"
+            android:exported="true"
+            android:label="@string/tasbihat_label">
             <intent-filter>
                 <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
             </intent-filter>
@@ -26,9 +29,9 @@
 
         <!-- Zekr widget -->
         <receiver
-            android:name=".view.activity.ZekrActivity"
-            android:label="@string/zekrLabel"
-            android:exported="false">
+            android:name=".view.widget.ZekrWidget"
+            android:exported="true"
+            android:label="@string/zekr_label">
             <intent-filter>
                 <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
                 <action android:name="android.appwidget.action.WIDGET_BUTTON" />
@@ -47,9 +50,9 @@
 
         <!-- Salavat widget -->
         <receiver
-            android:name=".view.activity.SalavatActivity"
-            android:label="@string/slavatLabel"
-            android:exported="false">
+            android:name=".view.widget.SalavatWidget"
+            android:exported="true"
+            android:label="@string/salavat_label">
             <intent-filter>
                 <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
                 <action android:name="android.appwidget.action.WIDGET_BUTTON" />
@@ -69,7 +72,9 @@
         <!-- Home activity -->
         <activity
             android:name=".view.activity.HomeActivity"
-            android:fitsSystemWindows="true" />
+            android:exported="true"
+            android:fitsSystemWindows="true"
+            android:launchMode="singleTop"/>
 
     </application>
 

@@ -1,110 +1,196 @@
 package ir.rezarasoulzadeh.zekraneh.view.activity
 
-import android.appwidget.AppWidgetManager
-import android.content.ComponentName
-import android.os.Bundle
 import android.view.Window
 import android.view.WindowManager
-import androidx.appcompat.app.AppCompatActivity
 import ir.rezarasoulzadeh.zekraneh.R
-import ir.rezarasoulzadeh.zekraneh.service.utils.AppStoresIntent
-import ir.rezarasoulzadeh.zekraneh.service.utils.SharedPrefs
-import kotlinx.android.synthetic.main.activity_home.*
+import ir.rezarasoulzadeh.zekraneh.base.BaseActivity
+import ir.rezarasoulzadeh.zekraneh.databinding.ActivityHomeBinding
+import ir.rezarasoulzadeh.zekraneh.utils.enums.ColorType
+import ir.rezarasoulzadeh.zekraneh.utils.extensions.rotate
+import ir.rezarasoulzadeh.zekraneh.utils.extensions.vibratePhone
+import ir.rezarasoulzadeh.zekraneh.utils.managers.HawkManager
+import ir.rezarasoulzadeh.zekraneh.utils.managers.IntentManager
+import ir.rezarasoulzadeh.zekraneh.utils.managers.SnackbarManager
 
-class HomeActivity : AppCompatActivity() {
+class HomeActivity : BaseActivity<ActivityHomeBinding>(
+    ActivityHomeBinding::inflate
+) {
 
-    private lateinit var sharePrefs: SharedPrefs
-    private lateinit var appStoresIntent: AppStoresIntent
-    private var widgetId = -1
+    ////////////////////////////////////////////////////////////////////////////////////////////////
+    //                                     overrides                                              //
+    ////////////////////////////////////////////////////////////////////////////////////////////////
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-
-        whiteStatusBar(window)
-
-        sharePrefs = SharedPrefs(this)
-        appStoresIntent = AppStoresIntent(this)
-
-        val bundle = intent.extras
-
-        this.widgetId = bundle!!.getInt("appWidgetId", -1)
-
-        if (this.widgetId == -1) {
-            finish()
-        }
-
-        setContentView(R.layout.activity_home)
-
-        resetZekrButton.setOnClickListener {
-            sharePrefs.setCounter("0")
-            updateAllWidgets()
-            finish()
-        }
-
-        resetSalavatButton.setOnClickListener {
-            sharePrefs.setSalavat("0")
-            updateAllWidgets()
-            finish()
-        }
-
-        resetTasbihatButton.setOnClickListener {
-            sharePrefs.setAA("0")
-            sharePrefs.setHA("0")
-            sharePrefs.setSA("0")
-            updateAllWidgets()
-            finish()
-        }
-
-        starButton.setOnClickListener {
-            appStoresIntent.bazaarStar()
-        }
-
-        developerButton.setOnClickListener {
-            appStoresIntent.bazaarDeveloper()
-        }
-
-        exitButton.setOnClickListener {
-            updateAllWidgets()
-            finish()
-        }
-
-//        sharePrefs = SharedPrefs(this)
-
+    override fun onAfterCreate() {
+        enableFullScreenMode(window = window)
+        configMenuClickListeners()
+        configDetailsClickListeners()
+        configColorClickListeners()
+        chooseSelectedTextColor()
     }
 
-    fun updateAllWidgets() {
-        val appWidgetManager = AppWidgetManager.getInstance(this)
+    ////////////////////////////////////////////////////////////////////////////////////////////////
+    //                                      configs                                               //
+    ////////////////////////////////////////////////////////////////////////////////////////////////
 
-        val zekr = appWidgetManager.getAppWidgetIds(
-            ComponentName(
-                this,
-                ZekrActivity::class.java
+    /**
+     * handle the action of menu clickable views.
+     */
+    private fun configMenuClickListeners() = with(binding) {
+        clDetails.setOnClickListener {
+            if(elDetails.isExpanded) {
+                elDetails.collapse()
+                imgDetailsArrow.rotate(destinationRotate = 0f)
+            } else {
+                elDetails.expand()
+                imgDetailsArrow.rotate(destinationRotate = 180f)
+            }
+        }
+        clLanguage.setOnClickListener {
+            if(elLanguage.isExpanded) {
+                elLanguage.collapse()
+                imgLanguageArrow.rotate(destinationRotate = 0f, duration = 150)
+            } else {
+                elLanguage.expand()
+                imgLanguageArrow.rotate(destinationRotate = 180f, duration = 150)
+            }
+        }
+        clColor.setOnClickListener {
+            if(elColor.isExpanded) {
+                elColor.collapse()
+                imgColorArrow.rotate(destinationRotate = 0f, duration = 150)
+            } else {
+                elColor.expand()
+                imgColorArrow.rotate(destinationRotate = 180f, duration = 150)
+            }
+        }
+        clStar.setOnClickListener {
+            IntentManager.rateIntent(
+                context = this@HomeActivity,
+                view = binding.root
             )
-        )
-        ZekrActivity().onUpdate(this, appWidgetManager, zekr)
-
-        val salavat = appWidgetManager.getAppWidgetIds(
-            ComponentName(
-                this,
-                SalavatActivity::class.java
+        }
+        clShare.setOnClickListener {
+            IntentManager.shareTextIntent(
+                context = this@HomeActivity,
+                view = binding.root,
+                title = getString(R.string.introduce_to_friends),
+                description = getString(R.string.share_app_with_friends)
             )
-        )
-        SalavatActivity().onUpdate(this, appWidgetManager, salavat)
-
-        val tasbihat = appWidgetManager.getAppWidgetIds(
-            ComponentName(
-                this,
-                TasbihatActivity::class.java
-            )
-        )
-        TasbihatActivity().onUpdate(this, appWidgetManager, tasbihat)
+        }
+        clExit.setOnClickListener {
+            finish()
+        }
     }
 
-    private fun whiteStatusBar(window: Window) {
-        window.setFlags(
-            WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS,
-            WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS
-        )
+    /**
+     * handle the action of details clickable views.
+     */
+    private fun configDetailsClickListeners() = with(binding) {
+        imgZekrRefresh.setOnClickListener {
+            vibratePhone()
+            imgZekrRefresh.rotate(
+                destinationRotate = if(imgZekrRefresh.rotation == 0f) 360f else 0f
+            )
+            HawkManager.saveZekr(zekr = 0)
+            IntentManager.resetZekrIntent(context = this@HomeActivity)
+            SnackbarManager.showSnackbar(
+                context = this@HomeActivity,
+                view = binding.root,
+                message = getString(R.string.zekr_has_been_reset)
+            )
+        }
+        imgSalavatRefresh.setOnClickListener {
+            vibratePhone()
+            imgSalavatRefresh.rotate(
+                destinationRotate = if(imgSalavatRefresh.rotation == 0f) 360f else 0f
+            )
+            HawkManager.saveSalavat(salavat = 0)
+            IntentManager.resetSalavatIntent(context = this@HomeActivity)
+            SnackbarManager.showSnackbar(
+                context = this@HomeActivity,
+                view = binding.root,
+                message = getString(R.string.salavat_has_been_reset)
+            )
+        }
+        imgTasbihatRefresh.setOnClickListener {
+            vibratePhone()
+            imgTasbihatRefresh.rotate(
+                destinationRotate = if(imgTasbihatRefresh.rotation == 0f) 360f else 0f
+            )
+            HawkManager.apply {
+                saveTasbihatAA(tasbihatAA = 0)
+                saveTasbihatSA(tasbihatSA = 0)
+                saveTasbihatHA(tasbihatHA = 0)
+            }
+            IntentManager.resetTasbihatIntent(context = this@HomeActivity)
+            SnackbarManager.showSnackbar(
+                context = this@HomeActivity,
+                view = binding.root,
+                message = getString(R.string.tasbihat_has_been_reset)
+            )
+        }
+    }
+
+    /**
+     * handle the action of color clickable views.
+     */
+    private fun configColorClickListeners() = with(binding) {
+        rbTextWhite.setOnClickListener {
+            HawkManager.saveTextColor(color = ColorType.WHITE)
+            IntentManager.apply {
+                changeSalavatColorIntent(context = this@HomeActivity)
+                changeZekrColorIntent(context = this@HomeActivity)
+                changeTasbihatColorIntent(context = this@HomeActivity)
+            }
+        }
+        rbTextBlack.setOnClickListener {
+            HawkManager.saveTextColor(color = ColorType.BLACK)
+            IntentManager.apply {
+                changeSalavatColorIntent(context = this@HomeActivity)
+                changeZekrColorIntent(context = this@HomeActivity)
+                changeTasbihatColorIntent(context = this@HomeActivity)
+            }
+        }
+        rbTextGreen.setOnClickListener {
+            HawkManager.saveTextColor(color = ColorType.GREEN)
+            IntentManager.apply {
+                changeSalavatColorIntent(context = this@HomeActivity)
+                changeZekrColorIntent(context = this@HomeActivity)
+                changeTasbihatColorIntent(context = this@HomeActivity)
+            }
+        }
+        rbTextRed.setOnClickListener {
+            HawkManager.saveTextColor(color = ColorType.RED)
+            IntentManager.apply {
+                changeSalavatColorIntent(context = this@HomeActivity)
+                changeZekrColorIntent(context = this@HomeActivity)
+                changeTasbihatColorIntent(context = this@HomeActivity)
+            }
+        }
+    }
+
+    /**
+     * update the UI of change widget text color according to getting saved text color from hawk.
+     */
+    private fun chooseSelectedTextColor() = with(binding) {
+        HawkManager.getTextColor().let {
+            rbTextWhite.isChecked = it == ColorType.WHITE
+            rbTextBlack.isChecked = it == ColorType.BLACK
+            rbTextGreen.isChecked = it == ColorType.GREEN
+            rbTextRed.isChecked = it == ColorType.RED
+        }
+    }
+
+    /**
+     * enable the full screen mode for activity.
+     */
+    private fun enableFullScreenMode(window: Window) {
+        window.apply {
+            setFlags(
+                WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS,
+                WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS
+            )
+        }
     }
 
 }

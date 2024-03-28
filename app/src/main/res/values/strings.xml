@@ -1,22 +1,38 @@
 <resources>
 
+    <!-- Default -->
     <string name="app_name">ذکرانه</string>
-    <string name="defaultTitle">ذکر روز</string>
-    <string name="defaultDay">پنجشنبه</string>
-    <string name="defaultPray">لا اِلهَ الَّا اَللّهُ المَلِکُ الحَقُّ المُبین</string>
-    <string name="configure">Configure</string>
-    <string name="add_widget">Add widget</string>
-    <string name="slavatLabel">صلوات</string>
-    <string name="zekrLabel">ذکر روز</string>
-    <string name="tasbihatLabel">تسبیحات</string>
+
+    <!-- Sentences -->
+    <string name="today_salavat">صلوات های روز</string>
+    <string name="today_zekr">ذکر روز</string>
+    <string name="today_tasbihat">تسبیحات حضرت زهرا (س)</string>
     <string name="AALabel">اَللّهُ اَکبَر</string>
     <string name="HALabel">اَلحَمدُلِلّه</string>
     <string name="SALabel">سُبحانَ اَللّه</string>
+    <string name="salavat_has_been_reset">صلوات های روز بازنشانی شد</string>
+    <string name="zekr_has_been_reset">ذکر روز بازنشانی شد</string>
+    <string name="tasbihat_has_been_reset">تسبیحات حضرت زهرا (س) بازنشانی شد</string>
+    <string name="install_bazaar_notice">ابتدا برنامه بازار را نصب کنید</string>
+    <string name="share_process_failed">همرسانی مقدور نیست</string>
+    <string name="salavat_label">صلوات</string>
+    <string name="zekr_label">ذکر روز</string>
+    <string name="tasbihat_label">تسبیحات</string>
+    <string name="introduce_to_friends">معرفی به دوستان</string>
+
+    <!-- Multiline -->
+    <string name="share_app_with_friends" formatted="false">
+                        ذکرانه، ذکر شمار ساده و شیک
+                        \n\n
+                        اگه برای ذکر روزانه میخوای به جای استفاده از اپلیکیشن های مختلف، از یه ویجت ساده و جمع و جور استفاده کنی میتونی همین الآن به راحتی ویجت ذکرانه رو نصبش کنی و ازش استفاده کنی.
+                        \n\n
+                        لینک نصب:
+                        \n
+                        http://cafebazaar.ir/app/?id=ir.rezarasuolzadeh.zekraneh
+    </string>
 
     <!-- Bazaar -->
-    <string name="bazaarStarLink">bazaar://details?id=ir.rezarasoulzadeh.zekraneh</string>
-    <string name="bazaarDeveloperLink">bazaar://collection?slug=by_author&amp;aid=027094212245</string>
-    <string name="bazaarShareLink">http://cafebazaar.ir/app/?id=ir.rezarasoulzadeh.zekraneh&amp;ref=shar</string>
+    <string name="bazaarStarLink">bazaar://details?id=ir.rezarasuolzadeh.zekraneh</string>
     <string name="bazaarPackage">com.farsitel.bazaar</string>
 
 </resources>
